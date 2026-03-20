@@ -1,5 +1,6 @@
-import mongoose, { Connection } from "mongoose";
-import dotenv from 'dotenv'
+const  mongoose =require("mongoose");
+const  dotenv=require('dotenv');
+import type {Connection} from "mongoose"
 dotenv.config();
  class DataBase{
 private DBConnection !:Connection;
@@ -31,3 +32,4 @@ public static getInstance(){
  }
 
 }
+module.exports={DataBase};

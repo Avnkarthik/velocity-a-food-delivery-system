@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose=require("mongoose");
 
 const UserModel=new mongoose.Schema({
     Name:{
@@ -13,7 +13,7 @@ const UserModel=new mongoose.Schema({
         index:true
 
     },
-    password:{
+    Password:{
         type:String,
         required:true
     },
@@ -40,7 +40,7 @@ const RestaurentModel=new mongoose.Schema({
          index:true
 
     },
-    password:{
+    Password:{
         type:String,
         required:true
     },
@@ -67,7 +67,7 @@ const DeliveryAgentModel=new mongoose.Schema({
          index:true
 
     },
-    password:{
+    Password:{
         type:String,
         required:true
     },
@@ -124,7 +124,7 @@ const DishesModel=new mongoose.Schema({
         required:true,
 
     },
-    photos:[String],
+    Photos:[String],
     Keywords:[String],
     RestaurentName:{
         type:String,
@@ -142,8 +142,9 @@ const DishesModel=new mongoose.Schema({
 
 });
 
-const User=mongoose.model("User",UserModel);
-const Restaurent=mongoose.model("Restaurent",RestaurentModel);
-const DelAgent=mongoose.model("DelAgent",DeliveryAgentModel);
-const Order=mongoose.model("Order",OrderDetailsModel);
-const Dishes=mongoose.model("Dishe",DishesModel)
+ const User=mongoose.model("User",UserModel);
+ const Restaurent=mongoose.model("Restaurent",RestaurentModel);
+ const DelAgent=mongoose.model("DelAgent",DeliveryAgentModel);
+ const Order=mongoose.model("Order",OrderDetailsModel);
+ const Dishes=mongoose.model("Dishe",DishesModel);
+ module.exports={User,Restaurent,DelAgent,Order,Dishes};
