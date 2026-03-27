@@ -37,9 +37,9 @@ const UserRegister=async (req:Request,res:Response)=>{
         sameSite:"none",
         httpOnly:true,
         secure:false,
-        maxAge:2*60*60*1000,
+        maxAge:7*60*60*1000*60,
        });
-       res.status(201).json({"message":"User Register Successfull",resobj});
+       res.status(201).json({message:"User Register Successfull",user:resobj});
        return;
 
     }else if(Role=="Restaurent"){
@@ -56,9 +56,9 @@ const UserRegister=async (req:Request,res:Response)=>{
         sameSite:"none",
         httpOnly:true,
         secure:false,
-        maxAge:2*60*60*1000,
+        maxAge:7*60*60*1000*60,
        });
-       res.status(201).json({"message":"Restaurent Register Successfull",resobj});
+       res.status(201).json({message:"Restaurent Register Successfull",user:resobj});
        return;
     }else if(Role=="DeliveryAgent"){
          const newUser= new DelAgent({
@@ -66,7 +66,8 @@ const UserRegister=async (req:Request,res:Response)=>{
         Email,
         Password:hashedpass,
         PhoneNumber,
-        Location
+        Location,
+       
        });
       const resobj=await newUser.save();
        const token=jwt.sign({id:resobj._id,role:"DeliveryAgent"},process.env.JWT_SECRET!,{expiresIn:"7d"})
@@ -77,7 +78,7 @@ const UserRegister=async (req:Request,res:Response)=>{
         maxAge:7*60*60*1000*60,
        });
        
-       res.status(201).json({message:"Agent Register Successfull",resobj});
+       res.status(201).json({message:"Agent Register Successfull",user:resobj});
        return;
     }
 
@@ -86,7 +87,7 @@ const UserRegister=async (req:Request,res:Response)=>{
 
     }catch(err){
         console.log("error:",(err as Error).message);
-          res.status(500).json({"message":"INternal server error"});
+          res.status(500).json({message:"Internal server error"});
 
     }
 }
@@ -115,7 +116,7 @@ const UserLogin=async(req:Request,res:Response)=>{
       return;
 
             }
-
+      
     const userobj= await Custommodel.findOne({Email});
     if(userobj==null || userobj==undefined){
          res.status(404).json({"message":"No user found with given credentials"});
@@ -134,7 +135,7 @@ const UserLogin=async(req:Request,res:Response)=>{
         secure:false,
         maxAge:60*60*60*7*1000,
        });
-       res.status(200).json({message:"User Login Successful!"});
+       res.status(200).json({message:"User Login Successful!",user:userobj});
        
    }catch(err){
     console.log("error:",(err as Error).message);
@@ -144,7 +145,21 @@ const UserLogin=async(req:Request,res:Response)=>{
 
 }
 
+const AgentUpdateStatus=async (req:Request,res:Response)=>{
+    const {AgentId,curStatus}=req.body;
+    if(AgentId==null || AgentId=="" || AgentId==undefined){
+        res.status(200).json("Insufficient details");
+        return;
+    }
+    try{
+    const agentobj=await DelAgent.updateOne({_id:AgentId},{$set:{ Availabitystatus:curStatus}});
+    res.status(200).json({message:"request successfull",details:agentobj});
+    }catch(err){
+        res.status(500).json({message:"Internal server error"});
+    }
+}
 
 
 
-module.exports={UserRegister,UserLogin};
+
+module.exports={UserRegister,UserLogin,AgentUpdateStatus};

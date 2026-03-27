@@ -49,9 +49,25 @@ const RestaurentModel=new mongoose.Schema({
               required:true
     },
     Location:{
-        type:String,
-        required:true
-    }
+            City:{
+                type:String,
+                index:true,
+                required:true,
+            },
+            State:{
+                type:String,
+                required:true
+            },
+            Country:{
+                type:String,
+                required:true
+            },
+            AddLine1:{
+                type:String,
+                required:true,
+            },
+        },
+    
 
 });
 const DeliveryAgentModel=new mongoose.Schema({
@@ -64,7 +80,7 @@ const DeliveryAgentModel=new mongoose.Schema({
         type:String,
         required:true,
         unique:true,
-         index:true
+        // index:true
 
     },
     Password:{
@@ -77,7 +93,13 @@ const DeliveryAgentModel=new mongoose.Schema({
     },
       Location:{
         type:String,
-        required:true
+        required:true,
+        index:true,
+    },
+    Availabitystatus:{
+        type:String,
+        required:true,
+        default:"Offline",
     }
 
 });
@@ -96,8 +118,13 @@ const OrderDetailsModel=new mongoose.Schema({
        type: mongoose.Schema.Types.ObjectId, // reference type
     ref: "Restaurent",
         required:true
+    }, 
+    DishId:{
+       type: mongoose.Schema.Types.ObjectId, // reference type
+    ref: "Dishes",
+        required:true
     },
-    DeliveryType:{
+    PaymentType:{
         type:String,
         required:true
     },
@@ -105,7 +132,7 @@ const OrderDetailsModel=new mongoose.Schema({
       type:Number,
         required:true,
     },
-    Orderstatus:{
+    OrderStatus:{
          type:String,
         required:true
 
@@ -124,15 +151,17 @@ const DishesModel=new mongoose.Schema({
         required:true,
 
     },
-    Photos:[String],
-    Keywords:[String],
-    RestaurentName:{
-        type:String,
-        required:true
+    Photos:{
+        type:[String],
+
     },
-     RestaurentLocation:{
+    Keywords:{
+        type:[String],
+    },
+    City:{
         type:String,
-        required:true
+        required:true,
+
     },
     RestaurentId:{
           type: mongoose.Schema.Types.ObjectId, // reference type
