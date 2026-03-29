@@ -1,3 +1,5 @@
+import console = require("node:console");
+
 const mongoose=require("mongoose");
 
 const UserModel=new mongoose.Schema({
@@ -24,6 +26,12 @@ const UserModel=new mongoose.Schema({
     Location:{
         type:String,
         required:true
+    },
+    PreviousOrderes:{
+        type: [mongoose.Schema.Types.ObjectId], // reference type
+          ref: "Dishes",
+        required:true
+
     }
 
 });
@@ -136,6 +144,10 @@ const OrderDetailsModel=new mongoose.Schema({
          type:String,
         required:true
 
+    },
+    OrderedAt:{
+        type:Date,
+        default:Date.now,
     }
     
 
@@ -152,7 +164,7 @@ const DishesModel=new mongoose.Schema({
 
     },
     Photos:{
-        type:[String],
+        type:[{}],
 
     },
     Keywords:{
