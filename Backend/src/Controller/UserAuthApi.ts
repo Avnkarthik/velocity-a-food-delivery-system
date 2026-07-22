@@ -1,7 +1,8 @@
 const  express =require("express");
 const bcrypt=require("bcrypt");
 import type {Request,Response} from "express";
-const { DelAgent, Restaurent, User }=require("../model/DatabaseSchema.ts");
+import mongoose = require("mongoose");
+const { DelAgent, Restaurent, User,Order,Dishes }=require("../model/DatabaseSchema.ts");
 const {DataBase} =require("./../model/DatabaseConnection.ts");
 require("dotenv").config();
 const jwt =require("jsonwebtoken");
@@ -160,6 +161,31 @@ const AgentUpdateStatus=async (req:Request,res:Response)=>{
 }
 
 
+const Logout=async(req:Request,res:Response)=>{
+    if(req.headers.cookie==null || req.headers.cookie=="" || req.headers.cookie==undefined){
+        res.status(200).json({message:"INvalid request"});
+        return;
+    }
+    res.clearCookie("Access_Token");
+
+    res.status(200).json({message:"Logout successful"});
+}
 
 
-module.exports={UserRegister,UserLogin,AgentUpdateStatus};
+const OrderHistory=async (req:Request,res:Response)=>{
+    const {userId}=req.body;
+    if(userId=="" || userId==null || userId==undefined){
+        res.status(200).json({message:"No user Details"});
+        return;
+    }
+
+    const userobj= await User.findOne({userId});
+    const [history]=await Promise.all(userobj.PreviousOrderes.map((ord:mongoose.Schema.Types.ObjectId)=>{
+           Dishes.findOne({_id:ord});
+    }));
+    res.status(200).json({message:"request Successful",history});
+
+}
+
+
+module.exports={UserRegister,UserLogin,AgentUpdateStatus,Logout,OrderHistory};

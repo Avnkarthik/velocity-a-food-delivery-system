@@ -8,4 +8,13 @@ const ContiansAll=(reqparams:Record<string,any>)=>{
      
 
 }
-module.exports={ContiansAll};
+const fetchRecord=async (recordId:String,recordModel:any)=>{
+     if(recordId==null || recordModel==null || recordId==undefined || recordModel==undefined){
+      return {};
+     }
+    
+     const res=await recordModel.findOne({_id:recordId});
+     return res;
+   
+}
+module.exports={ContiansAll,fetchRecord};
