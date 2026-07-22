@@ -3,10 +3,16 @@ import type {Request,Response} from "express"
 import type jsonwebtoken = require("jsonwebtoken");
 import type AnyConnectionBulkWriteModel = require("mongoose");
 import mongoose = require("mongoose");
+const {RedisClient}=require("../services/Redis.ts");
 const {cloudinary} =require("./../services/Cloudinary.ts")
 const {ContiansAll}=require("./Utils.ts");
 const {Dishes,Restaurent}=require("./../model/DatabaseSchema.ts");
 const {jwt}=require("jsonwebtoken");
+
+
+// ################ Upload disd ################
+
+
 const UploadDish=async(req:Request,res:Response)=>{
      if(req.files==null || req.files.length==0){
         res.status(200).json({message:"No file/files for Images uploaded"});
@@ -52,6 +58,11 @@ const UploadDish=async(req:Request,res:Response)=>{
 
 }
 
+
+  // #########################  fetch dishes #############################
+
+
+
 const FetchDishes=async (req:Request,res:Response)=>{
     const {city}=req.body;
     if(city==undefined || city==null || city==""){
@@ -60,11 +71,19 @@ const FetchDishes=async (req:Request,res:Response)=>{
     }
    
     try{
+        const client=await RedisClient();
+        const resultArray:any[]=[];
+        const resultCached= await client.get(`Dishes:${city}`);
+        if(resultCached!=null && resultCached!=undefined){
+            console.log("cache hit");
+             res.status(200).json({message:"Fetch successful",data:JSON.parse(resultCached)});
+             return;
+        }
+        
         const [restaurentslist,disheslist]=await  Promise.all([
             Restaurent.find({"Location.City":city}),
             Dishes.find({City:city})
         ]);
-        var resultArray:any[]=[];
        // console.log("restaurents:",restaurentslist,"dishes:",disheslist);
         restaurentslist.map((rest:any)=>{
             disheslist.map((dish:any)=>{
@@ -79,6 +98,9 @@ const FetchDishes=async (req:Request,res:Response)=>{
               return;
 
         }
+        console.log("cache miss");
+       await client.set(`Dishes:${city}`,JSON.stringify(resultArray),{EX:60});
+       
         res.status(200).json({message:"Fetch successful",data:resultArray});
 
 
@@ -87,6 +109,10 @@ const FetchDishes=async (req:Request,res:Response)=>{
         res.status(500).json({message:"Internal server Error"});
     }
 }
+
+
+ // #########################  delete dishe #############################
+
 
 const DeleteDish=async (req:Request,res:Response)=>{
     console.log(req.body);
@@ -127,6 +153,10 @@ const DeleteDish=async (req:Request,res:Response)=>{
     }
 
 }
+
+  // #########################  update dishes #############################
+
+
  const UpdateDish=async (req:Request,res:Response)=>{
 
     try{
@@ -176,6 +206,9 @@ const DeleteDish=async (req:Request,res:Response)=>{
 
 
  }
+
+   // #########################  delete Image #############################
+
 
  const DeleteImage=async(req:Request,res:Response)=>{
 

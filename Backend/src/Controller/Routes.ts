@@ -6,21 +6,21 @@ const {ProtectRoute}=require("./middleware");
 const {PlaceOrder,CompleteOrderStatus,fetchDetails}=require("./OrderApi.ts");
 const {upload} =require("./../services/multer.ts");
 const {UploadDish,FetchDishes,DeleteDish,DeleteImage,UpdateDish}=require("./DishApi.ts");
-//  Authentication routes
+//##################  Authentication routes
 
 controller.post("/User-Register",UserRegister);
 controller.get("/User-Login",UserLogin);
 controller.put("/User-Logout",ProtectRoute,Logout);
 controller.put("/Agent-status-update",ProtectRoute,AgentUpdateStatus);
 
-//   Order Routes
+// ########################  Order Routes
 
 controller.post("/Place-Order",ProtectRoute,PlaceOrder);
 controller.put("/updateOrderStatus",ProtectRoute,CompleteOrderStatus);
 controller.get("/Get-History",ProtectRoute,OrderHistory);
 controller.get("/Get-Detils",ProtectRoute,fetchDetails);
 
-//  Dish Image upload route
+//#######################  Dish Image upload route
 
 controller.post("/Upload-Dish",ProtectRoute,upload.array("files",5),UploadDish);
 controller.get("/Fetch-dishes",ProtectRoute,FetchDishes);
